@@ -81,6 +81,7 @@ export class VMScrollView extends VMComponpent {
             }
             scrollView.content.addChild(item);
             item.setPosition(Vec3.ZERO)
+            item.active =true
             item.getComponent(VMData)?.Init(data[i])
         }
     }
