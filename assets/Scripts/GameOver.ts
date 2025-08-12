@@ -1,6 +1,5 @@
 import { _decorator, Component, instantiate, Node, Sprite, Vec3 } from 'cc';
 import { VMData } from './Core/VMData';
-import { GameOverItem } from './GameOverItem';
 import { VMScrollView } from './Core/VMScrollView';
 const { ccclass, property } = _decorator;
 
@@ -18,9 +17,9 @@ export class GameOver extends VMData {
         let data = [];
         for(let i=0;i<10;i++){
             data.push({
-                name: "21312",
+                name: "name" + i,
                 headURL: "https://img.alicdn.com/imgextra/i1/O1CN01q5Yq5j1QYZyhZJxqj_!!6000000002635-0-tps-200-200.png",
-                score: 123
+                score: i*10
             });
         }
         this.scrollView.CreateItems(data, null);

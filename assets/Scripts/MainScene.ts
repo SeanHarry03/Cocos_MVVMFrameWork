@@ -3,23 +3,20 @@ import { VMData } from './Core/VMData';
 import { BindVMUI } from './Core/Decorator';
 const { ccclass, property, executeInEditMode } = _decorator;
 
-
-
 @ccclass('MainScene')
 export class MainScene extends VMData {
 
-    // @property(CCInteger)
     @BindVMUI({ comName: "lablestr" })
-    lablestr: number = 0;
+    @property({type: CCInteger})
+    lablestr: number = 12;
 
     protected onLoad(): void {
         // super.onLoad();
-        this.lablestr = 12312
-        console.log("MainScene onLoad")
+        console.log("MainScene onLoad",this.lablestr)
     }
 
     start() {
-        console.log("MainScene start")
+        console.log("MainScene start",this.lablestr)
     }
 }
 

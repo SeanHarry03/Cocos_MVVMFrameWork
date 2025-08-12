@@ -113,13 +113,13 @@ export function BindVMUI({ comName, changeKey = "" }): PropertyDecorator {
         }
         $target[bindVMDataKey][$propertyKey] = { privateKey, initialValue };
 
-        // 如果还没有重写构造函数，则重写它
-        // if (!$target.__bind_vm_data_initialized__) {
+        
         const originalOnInit = $target.__init || $target.onLoad || function () { };
 
         $target.onLoad = function () {
-            // VMData 的初始化方法
-            originalOnInit.apply(this);
+            // 保存编辑器面板设置的原始值
+            const editorValue = this[$propertyKey];
+
 
             // 为每个实例定义响应式属性
             const vmDataProps = this.constructor.prototype[bindVMDataKey];
@@ -161,19 +161,13 @@ export function BindVMUI({ comName, changeKey = "" }): PropertyDecorator {
                     }
                 });
 
-                // 设置初始值
-                if (initialValue !== undefined) {
-                    this[propKey] = initialValue;
-                }
-
+                // 恢复编辑器面板设置的值，如果没有则使用默认值
+                this[propKey] = editorValue !== undefined ? editorValue : initialValue;
             }
 
             // VMData 的初始化方法
-            // originalOnInit.apply(this);
+            originalOnInit.apply(this);
         };
-
-        // $target.__bind_vm_data_initialized__ = true;
-        // }
     }
 }
 
