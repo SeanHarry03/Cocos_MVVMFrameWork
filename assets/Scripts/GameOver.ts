@@ -18,7 +18,7 @@ export class GameOver extends VMData {
         for(let i=0;i<10;i++){
             data.push({
                 name: "name" + i,
-                headURL: "https://img.alicdn.com/imgextra/i1/O1CN01q5Yq5j1QYZyhZJxqj_!!6000000002635-0-tps-200-200.png",
+                headURL: "http://gips3.baidu.com/it/u=1821127123,1149655687&fm=3028&app=3028&f=JPEG&fmt=auto?w=720&h=1280",
                 score: i*10
             });
         }

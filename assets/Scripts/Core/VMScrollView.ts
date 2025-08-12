@@ -71,6 +71,7 @@ export class VMScrollView extends VMComponpent {
      */
     public CreateItems(data: any[], prefab?: Prefab, node?: Node) {
         let scrollView = this.node.getComponent(ScrollView);
+        scrollView.content.removeAllChildren();
         for (let i = 0; i < data.length; i++) {
             let item: Node = null;
             if (prefab || node) {

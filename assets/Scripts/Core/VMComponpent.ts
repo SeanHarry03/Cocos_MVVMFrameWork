@@ -23,6 +23,7 @@ export class VMComponpent extends Component {
 
     }
 
+    /**获取直系父节点的VMData */
     protected GetParentVMData(node?: Node) {
         if (!node)
             node = this.node;
@@ -37,13 +38,12 @@ export class VMComponpent extends Component {
     }
 
     /**组件的字段改变 */
-    public ValueChange(fieldstr: string, value: any) {
+    public  ValueChange(fieldstr: string, value: any) {
         let component: Component = this.getComponent(ComponentMap[this.ComponpentType]);
         if (!component) {
             console.warn(this.node.name, ":", this.constructor.name, '没有找到组件：', ComponentMap[this.ComponpentType]);
             return;
         }
-        let aaa = component.hasOwnProperty(fieldstr)
         if (component.hasOwnProperty(fieldstr)) {
             // console.log("绑定成功")
             this.getComponent(ComponentMap[this.ComponpentType])[fieldstr] = value;

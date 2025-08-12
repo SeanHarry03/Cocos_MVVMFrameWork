@@ -135,7 +135,7 @@ export function BindVMUI({ comName, changeKey = "" }): PropertyDecorator {
                         return this[privateKey];
                     },
                     set(value: any) {
-                        console.log(`设置 ${propKey}  comName:${comName}的值为:`, value);
+                        // console.log(`设置 ${propKey}  comName:${comName}的值为:`, value);
                         // 在这里添加你的自定义逻辑
 
 
