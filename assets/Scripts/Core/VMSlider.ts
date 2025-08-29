@@ -1,16 +1,17 @@
 import { _decorator, Button, Component, EventHandler, Node, Slider, Sprite } from 'cc';
 import { VMComponpent } from './VMComponpent';
+import { SliderProgress } from '../../FrameWork/UI/Component/SliderProgress/SliderProgress';
 const { ccclass, property, executeInEditMode, requireComponent } = _decorator;
 
 @ccclass('VMSlider')
-@requireComponent(Slider)
+@requireComponent(SliderProgress)
 @executeInEditMode(true)
 export class VMSlider extends VMComponpent {
 
     SliderEventCall: Function = null;
     protected onLoad(): void {
         super.onLoad();
-        if (this.node.children.length == 0||!this.node.getComponentsInChildren(Sprite)||!this.node.getComponentsInChildren(Button)) {
+        if (this.node.children.length == 0 || !this.node.getComponentsInChildren(Sprite) || !this.node.getComponentsInChildren(Button)) {
             let handle = new Node("Handle");
             handle.addComponent(Sprite);
             handle.addComponent(Button);
@@ -23,9 +24,9 @@ export class VMSlider extends VMComponpent {
 
     public ValueChange(fieldstr: string, value: any): void {
         // console.log('VMSlider ValueChange:', fieldstr, value);
-        let silderComponent = this.node.getComponent(Slider);
+        let silderComponent = this.node.getComponent(SliderProgress);
         if (typeof value == "number") {
-            silderComponent.progress = value;
+            silderComponent.value = value;
         } else {
             // console.log("滑动事件绑定")
             this.SliderEventCall = value;
@@ -33,8 +34,9 @@ export class VMSlider extends VMComponpent {
             eventhandler.target = this.node;
             eventhandler.component = "VMSlider";
             eventhandler.handler = "onSliderEvent";
-            silderComponent.slideEvents.push(eventhandler);
-
+            silderComponent.onValueChanged = (value: number) => {
+                this.SliderEventCall && this.SliderEventCall(value);
+            };
         }
     }
 

@@ -90,12 +90,12 @@ export function comp($compoentClass: INewable<Component>, $childName?: string, $
 }
 
 /**
- * 自动更新绑定的UI组件
- * @param comName 子级节点
- * @param changeKey 组件的字段
+ * 自动更新绑定的UI组件，向下查子节点
+ * @param comName 需要绑定的节点的名称，使用 ','分割
+ * @param changeKeys 需要绑定的组件的字段 ，使用 ','分割
  * @returns 
  */
-export function BindVMUI({ comName, changeKey = "" }): PropertyDecorator {
+export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
     return ($target, $propertyKey: string, $descriptorOrInitializer) => {
         // 创建私有属性名来存储实际值
         const privateKey = `__${$propertyKey}__value`;
@@ -113,7 +113,7 @@ export function BindVMUI({ comName, changeKey = "" }): PropertyDecorator {
         }
         $target[bindVMDataKey][$propertyKey] = { privateKey, initialValue };
 
-        
+
         const originalOnInit = $target.__init || $target.onLoad || function () { };
 
         $target.onLoad = function () {
@@ -138,23 +138,27 @@ export function BindVMUI({ comName, changeKey = "" }): PropertyDecorator {
                         // console.log(`设置 ${propKey}  comName:${comName}的值为:`, value);
                         // 在这里添加你的自定义逻辑
 
-
-                        let Component_Node: Node = FindChild(this.node, comName);
-                        if (value != null && Component_Node) {
-                            let comp: VMComponpent = Component_Node.getComponent(VMComponpent);
-                            if (comp == null) {
-                                console.warn(`节点：${comName}未找到组件VMComponpent`)
-                                return
+                        let needBindComponent = comName.split(",");
+                        let changeKey = changeKeys.split(",");
+                        for (let i = 0; i < needBindComponent.length; i++) {
+                            let Component_Node: Node = FindChild(this.node, needBindComponent[i]);
+                            if (value != null && Component_Node) {
+                                let comp: VMComponpent = Component_Node.getComponent(VMComponpent);
+                                if (comp == null) {
+                                    console.warn(`节点：${needBindComponent[i]}未找到组件VMComponpent`)
+                                    return
+                                }
+                                if (!changeKey[i] || changeKey[i] == "")
+                                    changeKey[i] = ComponentDefaultProperty[comp.ComponpentType]
+                                comp.ValueChange(changeKey[i], value)
+                                // let uiComponent: Component = Component_Node.getComponent(ComponentMap[comp.ComponpentType]);
+                                // uiComponent[changeKeys] = value
+                                // console.log("VM绑定成功")
+                            } else if (Component_Node == null) {
+                                console.warn(`没有找到节点${needBindComponent[i]}`)
                             }
-                            if (changeKey == "")
-                                changeKey = ComponentDefaultProperty[comp.ComponpentType]
-                            comp.ValueChange(changeKey, value)
-                            // let uiComponent: Component = Component_Node.getComponent(ComponentMap[comp.ComponpentType]);
-                            // uiComponent[changeKey] = value
-                            // console.log("VM绑定成功")
-                        } else if (Component_Node == null) {
-                            console.warn(`没有找到节点${comName}`)
                         }
+
 
                         // 存储实际值
                         this[privateKey] = value;
