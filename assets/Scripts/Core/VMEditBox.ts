@@ -1,21 +1,38 @@
-import { _decorator, Component, EditBox, Enum, Node } from 'cc';
+import { _decorator, EditBox, Enum, EventHandler } from 'cc';
 import { VMComponpent } from './VMComponpent';
 import { VMUpdateType } from './VMConst';
-const { ccclass, property, requireComponent } = _decorator;
+const { ccclass, property, requireComponent, executeInEditMode } = _decorator;
 
 @ccclass('VMEditBox')
 @requireComponent(EditBox)
+@executeInEditMode(true)
 export class VMEditBox extends VMComponpent {
 
-    @property({ type: Enum(VMUpdateType), tooltip: "数据同步的方式" ,override:true})
+    @property({ type: Enum(VMUpdateType), tooltip: "数据同步的方式", override: true })
     updateType: VMUpdateType = VMUpdateType.BothWay;
-    public EditEnd(eidtor: EditBox) {
-        let vmData = this.GetParentVMData();
-        if (vmData)
-            vmData[this.BindVMData_Field] = eidtor.string;
-        else {
-            console.warn(`未找到父级VMData,无法同步属性：${this.BindVMData_Field}`)
+
+    protected onLoad(): void {
+        super.onLoad();
+        if (this.node.getComponent(EditBox).editingDidEnded.length == 0) {
+            let editEndEvent = new EventHandler();
+            editEndEvent.target = this.node;
+            editEndEvent.component = "VMEditBox";
+            editEndEvent.handler = "EditEnd";
+            this.node.getComponent(EditBox).editingDidEnded.push(editEndEvent);
         }
     }
+
+    public EditEnd(eidtor: EditBox) {
+        this.SetVMDataField(this.BindVMData_Field, eidtor.string)
+    }
+
+    // override ValueChange(fieldstr: string, value: any): void {
+    //     if(typeof value == "string"){
+    //         super.ValueChange(fieldstr, value);
+    //     }else{
+    //         //是函数
+
+    //     }
+    // }
 }
 

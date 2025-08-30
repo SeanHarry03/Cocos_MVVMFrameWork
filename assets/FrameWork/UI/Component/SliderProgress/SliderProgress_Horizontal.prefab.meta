@@ -2,12 +2,12 @@
   "ver": "1.1.38",
   "importer": "prefab",
   "imported": true,
-  "uuid": "046623ac-dec7-493c-be7a-ead0db15c23d",
+  "uuid": "3599bd42-660e-4f87-846f-b73e1843d0e9",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "SliderProgress_Hor"
+    "syncNodeName": "SliderProgress_Horizontal"
   }
 }

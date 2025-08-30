@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "SliderProgress_Hor",
+    "_name": "SliderProgress_Vertical",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,

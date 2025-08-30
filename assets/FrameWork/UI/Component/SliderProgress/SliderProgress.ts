@@ -1,6 +1,6 @@
 const { ccclass, property, type } = _decorator;
 
-import { _decorator, Component, Node, EventTouch, UITransform, Vec3, math, Enum } from 'cc';
+import { _decorator, Component, Node, EventTouch, UITransform, Vec3, math, Enum, CCInteger } from 'cc';
 import { v2ToV3 } from '../../../Util/VecUtils';
 
 export enum SliderDirection {
@@ -26,8 +26,11 @@ export class SliderProgress extends Component {
     @property
     public maxValue: number = 1;
 
-    @property
+    @property({ displayName: "步长", tooltip: "（0 表示无限制）" })
     public step: number = 0;   // 步长（0 表示无限制）
+
+    @property({ type: CCInteger, displayName: "回调函数返回值精度", tooltip: "小数点后保留几位" })
+    public precision: number = -1;
 
     @property({ type: Enum(SliderDirection) })
     public direction: SliderDirection = SliderDirection.Horizontal; // 滑动方向
@@ -36,8 +39,11 @@ export class SliderProgress extends Component {
     private _value: number = 0;
 
 
+
     /** 存储 onValueChanged 的回调函数 */
     private _onValueChangedCallbacks: Array<(val: number) => void> = [];
+    /**单一的回调函数 */
+    private _onValueCahngeOnly: (val: number) => void;
 
     /** 数值变化回调 支持多个回调 */
     public get onValueChanged(): (val: number) => void {
@@ -53,15 +59,36 @@ export class SliderProgress extends Component {
         this._onValueChangedCallbacks.push(callback);
     }
 
+    public get onValueChangedOnly(): (val: number) => void {
+        return (val: number) => {
+            this._onValueChangedCallbacks.forEach(callback => {
+                callback(val); // 调用每个绑定的回调
+            });
+        };
+    }
+
+    /**设置单一的数值变化回调 */
+    public set onValueChangedOnly(callback: (val: number) => void) {
+        if (this._onValueChangedCallbacks.length == 0) {
+            this._onValueChangedCallbacks.push(callback);
+        }
+    }
+
     private invokeValueChanged() {
         this._onValueChangedCallbacks.forEach(callback => {
-            callback(this._value);
+            callback(this.value);
         });
     }
 
     /** 当前值 */
     get value() {
-        return this._value;
+        let v = this._value;
+        if (this.precision == 0) {
+            v = Math.floor(v);
+        } else if (this.precision > 0) {
+            v = parseFloat(v.toFixed(this.precision));
+        }
+        return v;
     }
 
     set value(v: number) {
@@ -73,7 +100,6 @@ export class SliderProgress extends Component {
             v = this.minValue + steps * this.step;
             v = parseFloat(v.toFixed(6)); // 避免浮点误差
         }
-
         this._value = v;
         this.updateUI();
 

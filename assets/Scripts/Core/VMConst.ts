@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, Enum, Label, Node, ProgressBar, Sprite } from 'cc';
+import { _decorator, Button, Component, EditBox, Enum, Label, Node, ProgressBar, Sprite } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**数据更新的方式 */
@@ -17,6 +17,7 @@ export const ComponentMap = {
     "Sprite": Sprite,
     "Button": Button,
     "ProgressBar": ProgressBar,
+    "EditBox": EditBox,
 };
 
 export const ComponentDefaultProperty = {
@@ -24,6 +25,7 @@ export const ComponentDefaultProperty = {
     "Sprite": "spriteFrame",
     "Button": "string",
     "ProgressBar": "progress",
+    "EditBox": "string",
 };
 
 // 预定义常见字段映射
@@ -36,3 +38,14 @@ export const fieldMapping: { [key: string]: string } = {
     'text': 'string',
     // 可以根据需要添加更多映射
 };
+
+export const fieldMappConst = {
+    Label: {
+        string: "string",
+        color: "color",
+    },
+    Sprite: {
+        spriteFrame: "spriteFrame",
+        color: "color",
+    },
+}

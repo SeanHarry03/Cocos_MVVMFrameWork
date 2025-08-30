@@ -1,10 +1,10 @@
-import { _decorator,   } from 'cc';
-import { VMData } from './Core/VMData';
-import { BindVMUI } from './Core/Decorator';
+import { _decorator, } from 'cc';
+import { BindVMUI } from '../../Scripts/Core/Decorator';
+import { VMData } from '../../Scripts/Core/VMData';
 const { ccclass, property } = _decorator;
 
-@ccclass('GameOverItem')
-export class GameOverItem extends VMData {
+@ccclass('Demo2Item')
+export class Demo2Item extends VMData {
 
     @BindVMUI({ comName: "Name" })
     Name: string = "21312";

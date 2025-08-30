@@ -116,8 +116,9 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
 
         const originalOnInit = $target.__init || $target.onLoad || function () { };
         //当前绑定的VM组件
-        $target['__BindVMComponentNames__'] = comName;
-        $target['__BindVMComponentFields__'] = changeKeys;
+        $target[`_${$propertyKey}__BindVMComponentNames__`] = comName;
+        $target[`_${$propertyKey}__BindVMComponentFields__`] = changeKeys;
+
         $target.onLoad = function () {
             // 保存编辑器面板设置的原始值
             const editorValue = this[$propertyKey];
@@ -137,26 +138,26 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
                     set(value: any) {
                         // console.log(`设置 ${propKey}  comName:${comName}的值为:`, value);
                         // 在这里添加你的自定义逻辑
-                        let needBindComponent = comName.split(",");
-                        let changeKey = changeKeys.split(",");
-                        for (let i = 0; i < needBindComponent.length; i++) {
-                            let Component_Node: Node = FindChild(this.node, needBindComponent[i]);
+                        let VMComponent_Names = comName.split(",");
+                        let VMComponent_Fields = changeKeys.split(",");
+                        for (let i = 0; i < VMComponent_Names.length; i++) {
+                            let Component_Node: Node = FindChild(this.node, VMComponent_Names[i]);
                             if (value != null && Component_Node) {
                                 let comp: VMComponpent = Component_Node.getComponent(VMComponpent);
                                 if (comp == null) {
-                                    console.warn(`节点：${needBindComponent[i]}未找到组件VMComponpent`)
+                                    console.warn(`节点：${VMComponent_Names[i]}未找到组件VMComponpent`)
                                     return
                                 }
-                                if (!changeKey[i] || changeKey[i] == "")
-                                    changeKey[i] = ComponentDefaultProperty[comp.ComponpentType]
-                                comp.ValueChange(changeKey[i], value)
+                                if (!VMComponent_Fields[i] || VMComponent_Fields[i] == "")
+                                    VMComponent_Fields[i] = ComponentDefaultProperty[comp.ComponpentType]
+                                comp.ValueChange(VMComponent_Fields[i], value)
                                 // console.log("VM绑定成功")
                                 if (comp.updateType == VMUpdateType.BothWay) {
                                     comp.BindVMData_Field = propKey;
                                 }
 
                             } else if (Component_Node == null) {
-                                console.warn(`没有找到节点${needBindComponent[i]}`)
+                                console.warn(`没有找到节点${VMComponent_Names[i]}`)
                             }
 
                         }
@@ -176,10 +177,16 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
             originalOnInit.apply(this);
         };
 
-        //双向绑定，反射到该字段绑定的其他VM组件
-        $target.ReflectOtherProperty = function (exCludeName: string, value: any) {
-            let BindVMComponent_Names = $target['__BindVMComponentNames__'];
-            let BindVMComponent_Fields = $target['__BindVMComponentFields__'];
+        /**
+         * 双向绑定，反射到该字段绑定的其他VM组件
+         * @param exCludeComName   要排除的组件名称()
+         * @param VMDatafieldstr VMData中的字段
+         * @param value 
+         * @returns 
+         */
+        $target.ReflectOtherProperty = function (exCludeComName: string, VMDatafieldstr: string, value: any) {
+            let BindVMComponent_Names = $target[`_${VMDatafieldstr}__BindVMComponentNames__`];
+            let BindVMComponent_Fields = $target[`_${VMDatafieldstr}__BindVMComponentFields__`];
 
             let VMComponent_Name = BindVMComponent_Names.split(",");
             let VMComponent_Field = BindVMComponent_Fields.split(",");
@@ -188,7 +195,7 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
                 let _ComName = VMComponent_Name[i]
                 let _ComField = VMComponent_Field[i];
 
-                if (_ComName == exCludeName)
+                if (_ComName == exCludeComName)
                     continue;
                 let Component_Node: Node = FindChild(this.node, _ComName);
                 if (value != null && Component_Node) {

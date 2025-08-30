@@ -4,3 +4,5 @@
 `$propertyKey` 对应字段
 
 
+# 待实现
+1.VMEditBox 组件自动绑定结束编辑事件

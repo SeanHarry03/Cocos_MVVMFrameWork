@@ -1,10 +1,10 @@
 import { _decorator, Component, instantiate, Node, Sprite, Vec3 } from 'cc';
-import { VMData } from './Core/VMData';
-import { VMScrollView } from './Core/VMScrollView';
+import { VMData } from '../../Scripts/Core/VMData';
+import { VMScrollView } from '../../Scripts/Core/VMScrollView';
 const { ccclass, property } = _decorator;
 
-@ccclass('GameOver')
-export class GameOver extends VMData {
+@ccclass('Demo2')
+export class Demo2 extends VMData {
 
     @property(VMScrollView)
     scrollView: VMScrollView = null;
@@ -23,6 +23,8 @@ export class GameOver extends VMData {
             });
         }
         this.scrollView.CreateItems(data, null);
+
+        
     }
 }
 

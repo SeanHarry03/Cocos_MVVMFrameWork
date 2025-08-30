@@ -17,9 +17,8 @@ export class VMComponpent extends Component {
     })
     BindVMData_Field: string = "";
 
+    /**UI组件的名称 */
     ComponpentType: string = this.constructor.name.split("VM")[1];
-
-
 
     protected onLoad(): void {
 
@@ -39,12 +38,16 @@ export class VMComponpent extends Component {
             return this.GetParentVMData(node.parent);
     }
 
-    public SetVMDataField(fieldstr: string, value: any): void {
+    /**设置VMData字段（双向绑定）
+     * @param VMDatafieldstr 字段名
+     * @param value 值
+     */
+    public SetVMDataField(VMDatafieldstr: string, value: any): void {
         let vmData: VMData = this.GetParentVMData();
         if (vmData)
-            vmData.ImmediateChangeProperty(this.node.name, fieldstr, value)
+            vmData.ImmediateChangeProperty(this.node.name, VMDatafieldstr, value)
         else {
-            console.warn(`未找到父级VMData,无法同步属性：${fieldstr}`)
+            console.warn(`未找到父级VMData,无法同步属性：${VMDatafieldstr}`)
         }
     }
 
@@ -52,7 +55,7 @@ export class VMComponpent extends Component {
     public ValueChange(fieldstr: string, value: any) {
         let component: Component = this.getComponent(ComponentMap[this.ComponpentType]);
         if (!component) {
-            console.warn(this.node.name, ":", this.constructor.name, '没有找到组件：', ComponentMap[this.ComponpentType]);
+            console.warn(this.node.name, ":", this.constructor.name, '没有找到属性：', ComponentMap[this.ComponpentType]);
             return;
         }
         if (component.hasOwnProperty(fieldstr)) {
