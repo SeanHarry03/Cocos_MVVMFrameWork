@@ -19,6 +19,8 @@ export class VMComponpent extends Component {
 
     ComponpentType: string = this.constructor.name.split("VM")[1];
 
+
+
     protected onLoad(): void {
 
     }
@@ -37,8 +39,17 @@ export class VMComponpent extends Component {
             return this.GetParentVMData(node.parent);
     }
 
+    public SetVMDataField(fieldstr: string, value: any): void {
+        let vmData: VMData = this.GetParentVMData();
+        if (vmData)
+            vmData.ImmediateChangeProperty(this.node.name, fieldstr, value)
+        else {
+            console.warn(`未找到父级VMData,无法同步属性：${fieldstr}`)
+        }
+    }
+
     /**组件的字段改变 */
-    public  ValueChange(fieldstr: string, value: any) {
+    public ValueChange(fieldstr: string, value: any) {
         let component: Component = this.getComponent(ComponentMap[this.ComponpentType]);
         if (!component) {
             console.warn(this.node.name, ":", this.constructor.name, '没有找到组件：', ComponentMap[this.ComponpentType]);
@@ -57,6 +68,8 @@ export class VMComponpent extends Component {
                 console.warn(this.node.name, ":", this.constructor.name, '没有找到字段：', fieldstr)
         }
     }
+
+    public
 
     /**模糊查询是否有该字段 */
     protected CheckProperty(targetField: string): string {

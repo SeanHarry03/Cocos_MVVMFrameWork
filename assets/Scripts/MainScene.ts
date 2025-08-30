@@ -11,7 +11,7 @@ export class MainScene extends VMData {
     lablestr: number = 12;
 
     @BindVMUI({ comName: "SliderProgress_Ver,HPValue", changeKeys: "value,string" })
-    HP: number = 30;
+    HP: number = 40;
 
     // @BindVMUI({ comName: "Button" })
     // onButtonClick() {
@@ -35,6 +35,10 @@ export class MainScene extends VMData {
     // }
 
     protected onLoad(): void {
+    }
+
+    public onBtnClick() {
+        console.log("HP:", this.HP)
     }
 }
 

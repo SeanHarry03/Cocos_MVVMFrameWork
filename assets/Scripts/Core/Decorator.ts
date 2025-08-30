@@ -50,7 +50,7 @@ import { Component } from "cc";
 import { VMMgr } from "./VMMgr";
 import { VMComponpent } from "./VMComponpent";
 import { VMData } from "./VMData";
-import { ComponentDefaultProperty, ComponentMap } from "./VMConst";
+import { ComponentDefaultProperty, ComponentMap, VMUpdateType } from "./VMConst";
 
 interface INewable<T = any> extends Function {
     new(...args: any[]): T;
@@ -100,7 +100,7 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
         // 创建私有属性名来存储实际值
         const privateKey = `__${$propertyKey}__value`;
 
-        // 获取初始值（如果有的话）
+        // 获取ts代码填写的初始值（如果有的话）
         let initialValue: any;
         if ($descriptorOrInitializer && typeof $descriptorOrInitializer === 'object' && 'initializer' in $descriptorOrInitializer) {
             initialValue = $descriptorOrInitializer.initializer?.();
@@ -115,13 +115,13 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
 
 
         const originalOnInit = $target.__init || $target.onLoad || function () { };
-
+        //当前绑定的VM组件
+        $target['__BindVMComponentNames__'] = comName;
+        $target['__BindVMComponentFields__'] = changeKeys;
         $target.onLoad = function () {
             // 保存编辑器面板设置的原始值
             const editorValue = this[$propertyKey];
-
-
-            // 为每个实例定义响应式属性
+            // 为每个实例定义响应式属性(get、set)
             const vmDataProps = this.constructor.prototype[bindVMDataKey];
             if (vmDataProps) {
                 let propKey = $propertyKey
@@ -137,7 +137,6 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
                     set(value: any) {
                         // console.log(`设置 ${propKey}  comName:${comName}的值为:`, value);
                         // 在这里添加你的自定义逻辑
-
                         let needBindComponent = comName.split(",");
                         let changeKey = changeKeys.split(",");
                         for (let i = 0; i < needBindComponent.length; i++) {
@@ -151,18 +150,22 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
                                 if (!changeKey[i] || changeKey[i] == "")
                                     changeKey[i] = ComponentDefaultProperty[comp.ComponpentType]
                                 comp.ValueChange(changeKey[i], value)
-                                // let uiComponent: Component = Component_Node.getComponent(ComponentMap[comp.ComponpentType]);
-                                // uiComponent[changeKeys] = value
                                 // console.log("VM绑定成功")
+                                if (comp.updateType == VMUpdateType.BothWay) {
+                                    comp.BindVMData_Field = propKey;
+                                }
+
                             } else if (Component_Node == null) {
                                 console.warn(`没有找到节点${needBindComponent[i]}`)
                             }
+
                         }
 
 
                         // 存储实际值
                         this[privateKey] = value;
                     }
+
                 });
 
                 // 恢复编辑器面板设置的值，如果没有则使用默认值
@@ -171,6 +174,35 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
 
             // VMData 的初始化方法
             originalOnInit.apply(this);
+        };
+
+        //双向绑定，反射到该字段绑定的其他VM组件
+        $target.ReflectOtherProperty = function (exCludeName: string, value: any) {
+            let BindVMComponent_Names = $target['__BindVMComponentNames__'];
+            let BindVMComponent_Fields = $target['__BindVMComponentFields__'];
+
+            let VMComponent_Name = BindVMComponent_Names.split(",");
+            let VMComponent_Field = BindVMComponent_Fields.split(",");
+
+            for (let i = 0; i < VMComponent_Name.length; i++) {
+                let _ComName = VMComponent_Name[i]
+                let _ComField = VMComponent_Field[i];
+
+                if (_ComName == exCludeName)
+                    continue;
+                let Component_Node: Node = FindChild(this.node, _ComName);
+                if (value != null && Component_Node) {
+                    let comp: VMComponpent = Component_Node.getComponent(VMComponpent);
+                    if (comp == null) {
+                        console.warn(`节点：${_ComName}未找到组件VMComponpent`)
+                        return
+                    }
+                    if (!_ComField || _ComField == "")
+                        _ComField = ComponentDefaultProperty[comp.ComponpentType]
+                    comp.ValueChange(_ComField, value)
+                }
+
+            }
         };
     }
 }

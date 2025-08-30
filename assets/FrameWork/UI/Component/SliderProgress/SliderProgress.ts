@@ -35,6 +35,30 @@ export class SliderProgress extends Component {
     @property
     private _value: number = 0;
 
+
+    /** 存储 onValueChanged 的回调函数 */
+    private _onValueChangedCallbacks: Array<(val: number) => void> = [];
+
+    /** 数值变化回调 支持多个回调 */
+    public get onValueChanged(): (val: number) => void {
+        return (val: number) => {
+            this._onValueChangedCallbacks.forEach(callback => {
+                callback(val); // 调用每个绑定的回调
+            });
+        };
+    }
+
+    public set onValueChanged(callback: (val: number) => void) {
+        // 允许直接加多个回调
+        this._onValueChangedCallbacks.push(callback);
+    }
+
+    private invokeValueChanged() {
+        this._onValueChangedCallbacks.forEach(callback => {
+            callback(this._value);
+        });
+    }
+
     /** 当前值 */
     get value() {
         return this._value;
@@ -53,13 +77,8 @@ export class SliderProgress extends Component {
         this._value = v;
         this.updateUI();
 
-        if (this.onValueChanged) {
-            this.onValueChanged(this._value);
-        }
+        this.invokeValueChanged();
     }
-
-    /** 数值变化回调 */
-    public onValueChanged: ((val: number) => void) | null = null;
 
     onLoad() {
         if (this.background) {
