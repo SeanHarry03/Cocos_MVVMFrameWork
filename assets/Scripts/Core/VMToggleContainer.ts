@@ -1,5 +1,6 @@
 import { _decorator, EventHandler, Node, Toggle, ToggleContainer } from 'cc';
 import { VMComponpent } from './VMComponpent';
+import { VMUpdateType } from './VMConst';
 const { ccclass, property, requireComponent, executeInEditMode } = _decorator;
 
 @ccclass('VMToggleContainer')
@@ -19,18 +20,26 @@ export class VMToggleContainer extends VMComponpent {
 
     public ValueChange(fieldstr: string, value: any) {
         let togglesGroup = this.node.getComponent(ToggleContainer);
+        if (this.valueChangedNum >= 1 && this.updateType == VMUpdateType.Once) {
+            togglesGroup.checkEvents.length = 0;
+            return;
+        }
+
         if (typeof value == 'function') {
-            const eventhandler = new EventHandler();
-            eventhandler.target = this.node;
-            eventhandler.component = "VMToggleContainer";
-            eventhandler.handler = "onCheckEvent";
-            togglesGroup.checkEvents.push(eventhandler);
             this.checkEvent = value;
+            if (togglesGroup.checkEvents.length == 0) {
+                const eventhandler = new EventHandler();
+                eventhandler.target = this.node;
+                eventhandler.component = "VMToggleContainer";
+                eventhandler.handler = "onCheckEvent";
+                togglesGroup.checkEvents.push(eventhandler);
+            }
         }
     }
 
     onCheckEvent(toggle: any) {
         let togglesGroup = this.node.getComponent(ToggleContainer);
+        this.ValueChangeRefCount(null);
         this.checkEvent && this.checkEvent(togglesGroup);
     }
 }

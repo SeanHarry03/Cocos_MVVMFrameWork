@@ -20,6 +20,8 @@ export class VMComponpent extends Component {
     /**UI组件的名称 */
     ComponpentType: string = this.constructor.name.split("VM")[1];
 
+    valueChangedNum: number = 0;
+
     protected onLoad(): void {
 
     }
@@ -51,9 +53,18 @@ export class VMComponpent extends Component {
         }
     }
 
+    /**字段值改变的引用计数 */
+    public ValueChangeRefCount(value: any) {
+        this.valueChangedNum++;
+    }
+
     /**组件的字段改变 */
     public ValueChange(fieldstr: string, value: any) {
         let component: Component = this.getComponent(ComponentMap[this.ComponpentType]);
+        if (this.valueChangedNum >= 1 && this.updateType == VMUpdateType.Once) {
+            return;
+        }
+        this.ValueChangeRefCount(value);
         if (!component) {
             console.warn(this.node.name, ":", this.constructor.name, '没有找到属性：', ComponentMap[this.ComponpentType]);
             return;

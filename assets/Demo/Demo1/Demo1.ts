@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, CCString, Color, EditBox, EventTouch, Label, labelAssembler, ProgressBar, Slider, Toggle, ToggleContainer, } from 'cc';
+import { _decorator } from 'cc';
 import { BindVMUI } from '../../Scripts/Core/Decorator';
 import { VMData } from '../../Scripts/Core/VMData';
 import { fieldMappConst } from '../../Scripts/Core/VMConst';

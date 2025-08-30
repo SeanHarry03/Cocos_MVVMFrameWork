@@ -148,13 +148,14 @@ export function BindVMUI({ comName, changeKeys = "" }): PropertyDecorator {
                                     console.warn(`节点：${VMComponent_Names[i]}未找到组件VMComponpent`)
                                     return
                                 }
+                                //获取UI组件需要被修改的字段
                                 if (!VMComponent_Fields[i] || VMComponent_Fields[i] == "")
                                     VMComponent_Fields[i] = ComponentDefaultProperty[comp.ComponpentType]
-                                comp.ValueChange(VMComponent_Fields[i], value)
-                                // console.log("VM绑定成功")
+
                                 if (comp.updateType == VMUpdateType.BothWay) {
                                     comp.BindVMData_Field = propKey;
                                 }
+                                comp.ValueChange(VMComponent_Fields[i], value)
 
                             } else if (Component_Node == null) {
                                 console.warn(`没有找到节点${VMComponent_Names[i]}`)

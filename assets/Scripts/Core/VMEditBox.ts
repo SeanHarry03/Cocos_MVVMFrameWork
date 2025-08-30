@@ -22,17 +22,9 @@ export class VMEditBox extends VMComponpent {
         }
     }
 
+    /**编辑结束 */
     public EditEnd(eidtor: EditBox) {
         this.SetVMDataField(this.BindVMData_Field, eidtor.string)
     }
-
-    // override ValueChange(fieldstr: string, value: any): void {
-    //     if(typeof value == "string"){
-    //         super.ValueChange(fieldstr, value);
-    //     }else{
-    //         //是函数
-
-    //     }
-    // }
 }
 
